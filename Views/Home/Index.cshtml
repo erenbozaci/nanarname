@@ -1,0 +1,79 @@
+﻿@model IEnumerable<EksiCaciklar.Models.Movie>
+
+@{
+    ViewData["Title"] = "Cacıklar Listesi";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4 text-success">🥒 Cacıklar 🥒</h1>
+    <p>Kötü filmlerin tek adresi...</p>
+    <a asp-action="Create" class="btn btn-outline-success">Yeni Kötü Film Ekle</a>
+</div>
+
+<div class="row">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-success">
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title" style="height: 300px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                            <span>Resim Yok</span>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@item.Director</h6>
+                        <p class="card-text">@item.Description</p>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Yönetim:</strong> @item.AdminScore | <strong>Halk:</strong> @item.UserScore
+                        </li>
+                        <li class="list-group-item bg-light">
+                            <h4 class="text-center">
+                                Skor: @item.CacikScore.ToString("0.0")
+                            </h4>
+
+                            <div class="text-center mt-2">
+                                @if (item.CacikScore > 80)
+                                {
+                                    <span class="badge bg-success">🏆 BAŞYAPIT (Tam Cacık)</span>
+                                }
+                                else if (item.CacikScore > 50)
+                                {
+                                    <span class="badge bg-warning text-dark">😐 Eh İşte (Sarımsaksız)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">🤢 Zaman Kaybı (Hıyar)</span>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="card-footer bg-transparent border-success d-flex justify-content-between">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Düzenle</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Hoppala! Veri gelmedi (Model = Null) veya hiç film yok.
+        </div>
+    }
+
+</div>

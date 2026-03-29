@@ -1,0 +1,288 @@
+/* --- EKÞÝ CACIKLAR RETRO THEME --- */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+:root {
+    --matrix-green: #00FF41;
+    --dark-bg: #0D0D0D;
+    --panel-bg: #1A1A1A;
+    --border-color: #333;
+    --accent-purple: #9D00FF;
+    --text-main: #E0E0E0;
+    --win95-grey: #c0c0c0;
+}
+
+body {
+    background-color: var(--dark-bg);
+    background-image: linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    font-family: 'Courier Prime', 'Courier New', monospace; /* Fontu güncelledik */
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+a {
+    color: var(--matrix-green);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+    a:hover {
+        color: #fff;
+        text-shadow: 0 0 5px var(--matrix-green);
+        text-decoration: underline;
+    }
+
+/* LAYOUT SÝSTEMÝ */
+.retro-container {
+    max-width: 1400px;
+    margin: 20px auto;
+    background-color: rgba(0,0,0,0.9);
+    border: 2px solid var(--matrix-green);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+    display: flex;
+    flex-direction: column;
+    min-height: 95vh;
+}
+
+header {
+    background: linear-gradient(to bottom, #000033, #000077);
+    border-bottom: 4px solid var(--matrix-green);
+    padding: 20px;
+    text-align: center;
+}
+
+h1.retro-title {
+    font-family: "Impact", sans-serif;
+    color: #fff;
+    text-shadow: 3px 3px 0 var(--accent-purple);
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: var(--matrix-green);
+    font-size: 1.2rem;
+    margin-top: 5px;
+}
+
+.marquee-container {
+    background-color: var(--matrix-green);
+    color: #000;
+    font-weight: bold;
+    padding: 5px 0;
+    font-size: 14px;
+    border-bottom: 2px solid #000;
+}
+
+/* GRIDS */
+.main-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px; /* Sol - Orta - Sað */
+    gap: 20px;
+    padding: 20px;
+    align-items: start;
+}
+
+/* PANELLER */
+.panel {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    margin: -15px -15px 15px -15px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--matrix-green);
+    display: block;
+    font-size: 0.9em;
+    letter-spacing: 1px;
+}
+
+/* MENÜ BUTONLARI */
+.menu-btn {
+    display: block;
+    background: #2a2a2a;
+    border-left: 4px solid var(--matrix-green);
+    padding: 10px;
+    margin-bottom: 8px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+    .menu-btn:hover {
+        background: var(--matrix-green);
+        color: #000;
+        padding-left: 15px;
+        text-decoration: none;
+    }
+
+/* KART TASARIMI (Index Sayfasý Ýçin) */
+.movie-card {
+    background-color: #222;
+    border: 1px dashed var(--accent-purple);
+    padding: 15px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+    .movie-card:hover {
+        transform: translateY(-3px);
+        border-style: solid;
+        box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+    }
+
+.movie-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.movie-title-badge {
+    background-color: var(--accent-purple);
+    color: #fff;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* RATING BAR */
+.rating-wrapper {
+    background: #333;
+    height: 24px;
+    border: 1px solid #555;
+    margin-top: 10px;
+    position: relative;
+}
+
+.rating-fill {
+    background: repeating-linear-gradient(45deg, #ff0000, #ff0000 10px, #cc0000 10px, #cc0000 20px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+    .rating-fill.good {
+        background: repeating-linear-gradient(45deg, #00FF41, #00FF41 10px, #00CC33 10px, #00CC33 20px);
+        color: black;
+        text-shadow: none;
+    }
+
+    .rating-fill.mid {
+        background: repeating-linear-gradient(45deg, #FFFF00, #FFFF00 10px, #CCCC00 10px, #CCCC00 20px);
+        color: black;
+        text-shadow: none;
+    }
+
+/* DÝÐERLERÝ */
+.ad-box {
+    border: 2px dashed #ffff00;
+    background: #000;
+    color: #ffff00;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    animation: pulse 2s infinite;
+}
+
+.retro-button {
+    background: var(--win95-grey);
+    border: 2px outset #fff;
+    color: black;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-family: inherit;
+    font-weight: bold;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+    .retro-button:hover {
+        background: #e0e0e0;
+        text-decoration: none;
+        color: black;
+    }
+
+    .retro-button:active {
+        border-style: inset;
+    }
+
+.guestbook-entry {
+    background: #eee;
+    color: #000;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid red;
+    font-size: 0.85em;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 0, 0);
+    }
+}
+
+footer {
+    background: #111;
+    border-top: 2px solid var(--matrix-green);
+    padding: 20px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: auto;
+}
+
+/* BOOTSTRAP OVERRIDES (Inputlarý düzeltmek için) */
+.form-control {
+    background-color: #000;
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    font-family: 'Courier Prime', monospace;
+    border-radius: 0;
+}
+
+    .form-control:focus {
+        background-color: #111;
+        color: #fff;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-left, .sidebar-right {
+        display: none;
+    }
+    /* Mobilde yanlarý gizle */
+}

@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EKŞİ CACIKLAR 2026</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+    <div class="retro-container">
+        <header>
+            <h1 class="retro-title">🥒 EKŞİ CACIKLAR 🥒</h1>
+            <div class="subtitle">~ O kadar kötü ki, tadından yenmez ~</div>
+            <div style="font-size: 10px; color: #aaa; margin-top:5px;">System.Time: @DateTime.Now.ToString("HH:mm:ss")</div>
+        </header>
+
+        <div class="marquee-container">
+            <marquee scrollamount="10" scrolldelay="100">
+                *** SON DAKİKA: CÜNEYT ARKIN'IN DÜNYAYI KURTARMASI BEKLENİYOR *** YENİ FILM: "MC DANDİK" REKOR KIRDI *** BİZİMSİNİZ.ORG HACKLENDİ *** REKLAM ALANLARI MÜSAİTTİR ***
+            </marquee>
+        </div>
+
+        <div class="main-layout">
+
+            <aside class="sidebar-left">
+                <div class="panel">
+                    <span class="panel-title">NAVİGASYON</span>
+                    <nav>
+                        <a asp-controller="Movies" asp-action="Index" class="menu-btn">🏠 ANASAYFA</a>
+                        <a asp-controller="Movies" asp-action="Index" class="menu-btn">🥒 TÜM CACIKLAR</a>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div style="border-top:1px dashed #555; margin:5px 0;"></div>
+                            <div style="color:var(--matrix-green); font-size:12px; padding:5px;">User: @User.Identity.Name</div>
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Movies", new { area = "" })">
+                                <button type="submit" class="retro-button" style="background:red; color:white; border-color:darkred;">ÇIKIŞ YAP</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div style="border-top:1px dashed #555; margin:5px 0;"></div>
+                            <a asp-area="Identity" asp-page="/Account/Login" class="menu-btn" style="color:yellow;">🔑 GİRİŞ YAP</a>
+                            <a asp-area="Identity" asp-page="/Account/Register" class="menu-btn" style="color:cyan;">📝 KAYIT OL</a>
+                        }
+                    </nav>
+                </div>
+
+                <div class="panel" style="text-align: center;">
+                    <span class="panel-title">MULTİMEDYA</span>
+                    <img src="https://placehold.co/150x150/000/0F0?text=Winamp+Skins" alt="Winamp" style="width:100%; border:1px solid #555; margin-bottom: 5px;">
+                    <a href="#" style="font-size: 0.8em;">Winamp 2.91 İndir</a>
+                </div>
+
+                <div class="panel">
+                    <span class="panel-title">SAYAÇ</span>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <span style="font-size: 10px; color: #aaa;">Toplam Cacık:</span><br>
+                        <div style="font-family: 'Courier New'; background:black; color:red; border:1px solid gray; display:inline-block; padding:2px 5px;">032490</div>
+                    </div>
+                </div>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <div style="border-top:1px dashed #555; margin:10px 0;"></div>
+                    <div style="font-size: 10px; color: red; text-align: center; margin-bottom: 2px;">-- ROOT ACCESS --</div>
+
+                    <a asp-controller="Movies" asp-action="Create" class="menu-btn" style="color:#ff00ff; border-left-color:#ff00ff;">🛠 FİLM EKLE</a>
+
+                    <a asp-controller="Users" asp-action="Index" class="menu-btn" style="color:cyan; border-left-color:cyan;">👥 KULLANICILAR</a>
+
+                }
+            </aside>
+
+            <main>
+                @RenderBody()
+            </main>
+
+            <aside class="sidebar-right">
+                <div class="panel">
+                    <span class="panel-title">DUYURULAR</span>
+                    <div style="text-align: center;">
+                        <p style="color: yellow; font-weight: bold; font-size:12px;">YÖNETİCİDEN MESAJ:</p>
+                        <p style="font-size:11px;">"Lütfen filmlere 0 verirken acımayın."</p>
+                        <div style="animation: blinker 1s step-end infinite; color: red;">!!! DİKKAT !!!</div>
+                    </div>
+                </div>
+
+                <div class="ad-box">
+                    ZENGİN BİLGİSAYAR MÜHENDİSLERİ<br>600 METRE YAKININIZDA<br>TIKLA VE KONUŞ!
+                </div>
+
+                <div class="panel">
+                    <span class="panel-title">ZİYARETÇİ DEFTERİ</span>
+                    <div class="guestbook-entry">
+                        <strong>McDandikFan:</strong><br>"Site çok iyi abi eline sağlık."
+                    </div>
+                    <div class="guestbook-entry">
+                        <strong>Hater123:</strong><br>"Gözlerim bozuldu renklerden."
+                    </div>
+                    <button class="retro-button">YAZ</button>
+                </div>
+            </aside>
+
+        </div> <footer>
+            <p>&copy; 2026 EkşiCacıklar Inc. Tüm Hakları Saklıdır.</p>
+            <p>Webmaster: <b>Batuhan Özdemir</b> | Hosted on Localhost</p>
+            <marquee direction="right" scrollamount="3" width="30%" style="color: var(--matrix-green);">...Loading...</marquee>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', function(e) {
+            const leaf = document.createElement('div');
+            leaf.innerHTML = '🥒';
+            leaf.style.position = 'fixed';
+            leaf.style.left = e.clientX + 'px';
+            leaf.style.top = e.clientY + 'px';
+            leaf.style.pointerEvents = 'none';
+            leaf.style.fontSize = '20px';
+            leaf.style.zIndex = '9999';
+            leaf.style.opacity = '1';
+            leaf.style.transition = 'opacity 1s, transform 1s';
+            document.body.appendChild(leaf);
+            setTimeout(() => {
+                leaf.style.opacity = '0';
+                leaf.style.transform = 'translateY(20px)';
+            }, 100);
+            setTimeout(() => { leaf.remove(); }, 1000);
+        });
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

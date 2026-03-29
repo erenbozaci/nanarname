@@ -1,0 +1,65 @@
+﻿@model List<EksiCaciklar.Models.UserViewModel>
+
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">👥 Kullanıcı Yönetim Paneli</h3>
+            <span class="badge bg-secondary">Toplam Üye: @Model.Count</span>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Email</th>
+                        <th>Kullanıcı Adı</th>
+                        <th>Rol Durumu</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.UserName</td>
+                            <td>
+                                @if (user.IsAdmin)
+                                {
+                                    <span class="badge bg-success">YÖNETİCİ (Admin)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Üye (User)</span>
+                                }
+                            </td>
+                            <td>
+                                @if (User.Identity.Name != user.UserName)
+                                {
+                                    <form asp-action="ToggleAdmin" method="post">
+                                        <input type="hidden" name="userId" value="@user.UserId" />
+                                        @if (user.IsAdmin)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Adminliği Al</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Admin Yap</button>
+                                        }
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Kendinizi silemezsiniz</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
