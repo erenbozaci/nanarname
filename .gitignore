@@ -38,6 +38,11 @@ ScaffoldingReadMe.txt
 
 # dotenv environment variables file
 .env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
 
 # Others
 ~$*

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Ana Sayfa - EKŞİ CACIKLAR{% endblock %}
+{% block content %}
+<div class="panel" style="text-align:center;border-color:red;margin-bottom:30px;">
+    <h2 style="color:red;">🔥 VİZYONDAKİ FELAKETLER 🔥</h2>
+</div>
+
+{% for item in movies %}
+    <div class="movie-card">
+        <div class="movie-header">
+            <span class="movie-title-badge">{{ item.title }} ({{ item.release_date|date:"Y" }})</span>
+        </div>
+        <div style="display:flex;gap:15px;">
+            <div style="flex:0 0 80px;">
+                <img src="{% if item.image_url %}{{ item.image_url }}{% else %}https://placehold.co/80x120{% endif %}" style="width:80px;height:auto;border:1px solid #fff;">
+            </div>
+            <div style="flex:1;">
+                <p style="margin:0;"><b>Yönetmen:</b> {{ item.director }}</p>
+                <p style="font-style:italic;color:#ccc;">{{ item.description|truncatechars:80 }}</p>
+                <a class="retro-button" style="display:inline-block;width:auto;" href="{% url 'movies:details' item.pk %}">İNCELE >></a>
+            </div>
+        </div>
+        <div class="rating-wrapper">
+            {% if item.cacik_score == -1 %}
+                <div class="rating-fill" style="width:100%;background:#333;color:gray;">HENÜZ OYLANMADI</div>
+            {% else %}
+                <div class="rating-fill {% if item.cacik_score >= 70 %}good{% elif item.cacik_score >= 50 %}mid{% endif %}" style="width:{{ item.cacik_score|floatformat:0 }}%;">
+                    %{{ item.cacik_score|floatformat:0 }} CACIK
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <div class="alert alert-warning">Henüz film yok.</div>
+{% endfor %}
+
+{% if user.is_staff %}
+    <a class="retro-button" style="width:auto;display:inline-block;" href="{% url 'movies:create' %}">[ YENİ FİLM EKLE ]</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EKŞİ CACIKLAR 2026{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="retro-container">
+    <header>
+        <h1 class="retro-title">🥒 EKŞİ CACIKLAR 🥒</h1>
+        <div class="subtitle">~ O kadar kötü ki, tadından yenmez ~</div>
+        <div style="font-size:10px;color:#aaa;margin-top:5px;">System.Time: {% now "H:i:s" %}</div>
+    </header>
+
+    <div class="marquee-container">
+        <marquee scrollamount="10" scrolldelay="100">
+            *** SON DAKİKA: CÜNEYT ARKIN'IN DÜNYAYI KURTARMASI BEKLENİYOR ***
+        </marquee>
+    </div>
+
+    <div class="main-layout">
+        <aside class="sidebar-left">
+            <div class="panel">
+                <span class="panel-title">NAVİGASYON</span>
+                <a class="menu-btn" href="{% url 'movies:index' %}">🏠 ANASAYFA</a>
+                <a class="menu-btn" href="{% url 'movies:index' %}">🥒 TÜM CACIKLAR</a>
+                {% if user.is_authenticated %}
+                    <div style="border-top:1px dashed #555; margin:5px 0;"></div>
+                    <div style="color:var(--matrix-green);font-size:12px;padding:5px;">User: {{ user.username }}</div>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="retro-button" style="background:red;color:white;border-color:darkred;">ÇIKIŞ YAP</button>
+                    </form>
+                {% else %}
+                    <div style="border-top:1px dashed #555; margin:5px 0;"></div>
+                    <a class="menu-btn" style="color:yellow;" href="{% url 'login' %}">🔑 GİRİŞ YAP</a>
+                    <a class="menu-btn" style="color:cyan;" href="{% url 'register' %}">📝 KAYIT OL</a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <div style="border-top:1px dashed #555; margin:10px 0;"></div>
+                    <a class="menu-btn" style="color:#ff00ff;" href="{% url 'movies:create' %}">🛠 FİLM EKLE</a>
+                    <a class="menu-btn" style="color:cyan;" href="{% url 'movies:users_index' %}">👥 KULLANICILAR</a>
+                {% endif %}
+            </div>
+        </aside>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        <aside class="sidebar-right">
+            <div class="panel">
+                <span class="panel-title">DUYURULAR</span>
+                <p style="font-size:11px;">"Lütfen filmlere 0 verirken acımayın."</p>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 EkşiCacıklar Inc.</p>
+    </footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
