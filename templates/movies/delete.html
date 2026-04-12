@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Sil: {{ movie.title }}{% endblock %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="card shadow border-danger mx-auto" style="max-width:600px;">
+        <div class="card-header bg-danger text-white"><h3>⚠️ DİKKAT! Bu işlem geri alınamaz!</h3></div>
+        <div class="card-body">
+            <h4>"{{ movie.title }}" filmini silmek üzeresin.</h4>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg me-2">Evet, Sil Gitsin!</button>
+                <a class="btn btn-outline-secondary btn-lg" href="{% url 'movies:index' %}">Vazgeç</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

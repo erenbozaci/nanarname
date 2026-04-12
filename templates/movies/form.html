@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} - EKŞİ CACIKLAR{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header"><h3 class="mb-0">{{ page_title }}</h3></div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Kaydet</button>
+                <a class="btn btn-secondary" href="{% url 'movies:index' %}">İptal</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

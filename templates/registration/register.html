@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Kayıt Ol{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width:600px;">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white"><h4 class="mb-0">Kayıt Ol</h4></div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-success w-100" type="submit">Hesap Oluştur</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
