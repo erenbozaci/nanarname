@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Ziyaretçi Defteri - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <span class="panel-title">📖 ZİYARETÇİ DEFTERİ</span>
+
+    <div style="margin-bottom: 20px;">
+        <h3 style="color: var(--matrix-green); margin-bottom: 10px;">Son Mesajlar</h3>
+        {% for message in messages %}
+        <div style="border: 1px solid #555; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <strong style="color: var(--matrix-green);">{{ message.user.username }}</strong>
+                <small style="color: #aaa;">{{ message.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+            <div style="white-space: pre-wrap;">{{ message.message }}</div>
+        </div>
+        {% empty %}
+        <p style="color: #888; font-style: italic;">Henüz hiç mesaj yok. İlk mesajı siz bırakın!</p>
+        {% endfor %}
+    </div>
+
+    <div style="border-top: 1px dashed #555; padding-top: 20px;">
+        <h3 style="color: var(--matrix-green); margin-bottom: 10px;">Yeni Mesaj Bırakın</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 15px;">
+                <label for="{{ form.message.id_for_label }}" style="display: block; margin-bottom: 5px; color: var(--matrix-green);">Mesajınız:</label>
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <div style="color: red; font-size: 12px;">{{ form.message.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="retro-button" style="background: var(--matrix-green); color: black;">Gönder</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

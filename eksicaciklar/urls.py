@@ -15,8 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views.generic import RedirectView
+from movies import forms as movie_forms
 from movies import views as movie_views
 
 urlpatterns = [
@@ -24,5 +26,10 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='movies:index', permanent=False)),
     path('movies/', include('movies.urls')),
     path('accounts/register/', movie_views.register, name='register'),
+    path(
+        'accounts/login/',
+        auth_views.LoginView.as_view(authentication_form=movie_forms.CustomLoginForm),
+        name='login',
+    ),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -1,12 +1,14 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
-from django.db.models import Avg, Count, Prefetch
+from django.db.models import Avg, Count, Prefetch, Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from datetime import timedelta
 
-from .forms import MovieForm, UserRegistrationForm, VoteForm
-from .models import Movie, UserVote
+from .forms import MovieForm, UserRegistrationForm, VoteForm, VisitorMessageForm
+from .models import Movie, UserVote, VisitorMessage, UserBan
 
 
 def is_admin(user):
@@ -50,14 +52,6 @@ def index(request):
                 + movie.user_avg_sound
                 + movie.user_avg_editing
             ) / 5.0
-
-        movie.admin_score = (
-            movie.score_scenario
-            + movie.score_acting
-            + movie.score_visuals
-            + movie.score_sound
-            + movie.score_editing
-        ) / 5.0
 
         if movie.vote_count == 0 and movie.admin_score == 0:
             movie.cacik_score = -1
@@ -147,10 +141,74 @@ def vote(request, pk):
     return redirect('movies:details', pk=movie.pk)
 
 
+def refresh_user_ban_status(user):
+    ban = getattr(user, 'ban', None)
+    if not ban or ban.lifted_at is not None:
+        return
+    if ban.is_indefinite:
+        return
+    if ban.banned_until and ban.banned_until <= timezone.now():
+        ban.lifted_at = timezone.now()
+        ban.save(update_fields=['lifted_at'])
+        user.is_active = True
+        user.save(update_fields=['is_active'])
+
+
 @user_passes_test(is_admin)
 def users_index(request):
-    users = User.objects.order_by('username')
+    users = User.objects.order_by('username').select_related('ban')
+    for u in users:
+        refresh_user_ban_status(u)
     return render(request, 'users/index.html', {'users': users})
+
+
+@user_passes_test(is_admin)
+def manage_user(request, user_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+    target_user = get_object_or_404(User, pk=user_id)
+    if target_user == request.user:
+        return redirect('movies:users_index')
+
+    action = request.POST.get('action')
+    if action == 'ban_temp':
+        try:
+            days = int(request.POST.get('ban_days', 0))
+        except (TypeError, ValueError):
+            days = 0
+        if days > 0:
+            ban_until = timezone.now() + timedelta(days=days)
+            UserBan.objects.update_or_create(
+                user=target_user,
+                defaults={
+                    'is_indefinite': False,
+                    'banned_until': ban_until,
+                    'lifted_at': None,
+                },
+            )
+            target_user.is_active = False
+            target_user.save(update_fields=['is_active'])
+    elif action == 'ban_indef':
+        UserBan.objects.update_or_create(
+            user=target_user,
+            defaults={
+                'is_indefinite': True,
+                'banned_until': None,
+                'lifted_at': None,
+            },
+        )
+        target_user.is_active = False
+        target_user.save(update_fields=['is_active'])
+    elif action == 'lift':
+        ban = getattr(target_user, 'ban', None)
+        if ban and ban.lifted_at is None:
+            ban.lifted_at = timezone.now()
+            ban.save(update_fields=['lifted_at'])
+        target_user.is_active = True
+        target_user.save(update_fields=['is_active'])
+    elif action == 'delete':
+        target_user.delete()
+    return redirect('movies:users_index')
 
 
 @user_passes_test(is_admin)
@@ -171,3 +229,23 @@ def toggle_admin(request, user_id):
         target_user.is_staff = True
     target_user.save(update_fields=['is_staff'])
     return redirect('movies:users_index')
+
+
+@login_required
+def visitors_book(request):
+    messages = VisitorMessage.objects.filter(
+        Q(is_approved=True) | Q(user=request.user)
+    ).order_by('-created_at')[:10]
+    if request.method == 'POST':
+        form = VisitorMessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.user = request.user
+            message.save()
+            return redirect('movies:visitors_book')
+    else:
+        form = VisitorMessageForm()
+    return render(request, 'movies/visitors_book.html', {
+        'messages': messages,
+        'form': form
+    })

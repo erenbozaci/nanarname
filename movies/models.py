@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Count
+from django.utils import timezone
 
 
 class Movie(models.Model):
@@ -120,3 +121,46 @@ class UserVote(models.Model):
             + self.score_sound
             + self.score_editing
         ) / 5.0
+
+
+class UserBan(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='ban',
+    )
+    is_indefinite = models.BooleanField(default=False)
+    banned_until = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    lifted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        if self.is_indefinite:
+            return f"{self.user.username} - Süresiz yasak"
+        return f"{self.user.username} - {self.banned_until:%d.%m.%Y %H:%M}" if self.banned_until else f"{self.user.username} - Ban"
+
+    @property
+    def is_active(self):
+        if self.lifted_at is not None:
+            return False
+        if self.is_indefinite:
+            return True
+        return self.banned_until is not None and self.banned_until > timezone.now()
+
+
+class VisitorMessage(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='visitor_messages'
+    )
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username}: {self.message[:50]}..."
