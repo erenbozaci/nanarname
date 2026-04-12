@@ -1,7 +1,7 @@
 # Nanarname
 
 ### Branchlerimiz
-`nanarname`: Ana sistemizin olduğu branch
+`nanarname`: Ana sistemizin olduğu branch<br>
 `toxic-model`: Toksisite modelimizi eğittiğimiz ve test ettiğimiz branch.
 
 ## Kurulum
