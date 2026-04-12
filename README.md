@@ -6,6 +6,8 @@
 | Macro Avg | 0.9793 | 0.9795 | 0.9794 | 7780 |
 | Weighted Avg | 0.9795 | 0.9794 | 0.9794 | 7780 |
 
+Best Threshold: 0.18
+
 ### Confusion Matrix
 
 | Actual \ Predicted | 0 | 1 |
