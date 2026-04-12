@@ -7,8 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from datetime import timedelta
 
-from .forms import MovieForm, UserRegistrationForm, VoteForm, VisitorMessageForm
-from .models import Movie, UserVote, VisitorMessage, UserBan
+from .forms import MovieForm, UserRegistrationForm, UserProfileForm, VoteForm, VisitorMessageForm
+from .models import Movie, UserProfile, UserVote, VisitorMessage, UserBan
 
 
 def is_admin(user):
@@ -71,6 +71,9 @@ def details(request, pk):
         pk=pk,
     )
     comments = movie.user_votes.exclude(comment='').order_by('-id')
+    for vote in comments:
+        if not hasattr(vote.user, 'profile'):
+            UserProfile.objects.get_or_create(user=vote.user)
     stats = movie.user_vote_stats()
     context = {
         'movie': movie,
@@ -229,6 +232,41 @@ def toggle_admin(request, user_id):
         target_user.is_staff = True
     target_user.save(update_fields=['is_staff'])
     return redirect('movies:users_index')
+
+
+@login_required
+def user_profile(request, user_id):
+    profile_user = get_object_or_404(User, pk=user_id)
+    profile, _ = UserProfile.objects.get_or_create(user=profile_user)
+    movie_comments = UserVote.objects.select_related('movie').filter(
+        user=profile_user,
+    ).exclude(comment='').order_by('-id')
+    if request.user == profile_user:
+        visitor_messages = VisitorMessage.objects.filter(user=profile_user).order_by('-created_at')
+    else:
+        visitor_messages = VisitorMessage.objects.filter(user=profile_user, is_approved=True).order_by('-created_at')
+    return render(request, 'users/profile.html', {
+        'profile_user': profile_user,
+        'profile': profile,
+        'movie_comments': movie_comments,
+        'visitor_messages': visitor_messages,
+    })
+
+
+@login_required
+def edit_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('movies:user_profile', user_id=request.user.id)
+    else:
+        form = UserProfileForm(instance=profile)
+    return render(request, 'users/edit_profile.html', {
+        'form': form,
+        'profile': profile,
+    })
 
 
 @login_required

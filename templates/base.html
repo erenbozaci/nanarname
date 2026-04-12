@@ -32,6 +32,7 @@
                 {% if user.is_authenticated %}
                     <div style="border-top:1px dashed #555; margin:5px 0;"></div>
                     <div style="color:var(--matrix-green);font-size:12px;padding:5px;">User: {{ user.username }}</div>
+                    <a class="menu-btn" href="{% url 'movies:user_profile' user.id %}">👤 Profilim</a>
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="retro-button" style="background:red;color:white;border-color:darkred;">ÇIKIŞ YAP</button>

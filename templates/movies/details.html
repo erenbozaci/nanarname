@@ -60,8 +60,19 @@
     {% for vote in comments %}
         <div class="card mb-2">
             <div class="card-body">
-                <strong>{{ vote.user.username }}</strong>
-                {% if vote.user.is_staff %}<span class="badge bg-warning text-dark">YÖNETİCİ</span>{% endif %}
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <a href="{% url 'movies:user_profile' vote.user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                        {% if vote.user.profile.avatar %}
+                            <img src="{{ vote.user.profile.avatar.url }}" alt="{{ vote.user.username }} avatar" class="rounded-circle border" style="width:48px; height:48px; object-fit:cover;">
+                        {% else %}
+                            <div class="rounded-circle border bg-secondary text-white d-flex align-items-center justify-content-center" style="width:48px; height:48px;font-size:1.1rem;">{{ vote.user.username|slice:":1"|upper }}</div>
+                        {% endif %}
+                        <span class="fw-bold ms-2">{{ vote.user.username }}</span>
+                    </a>
+                    {% if vote.user.is_staff %}
+                        <span class="badge bg-warning text-dark">YÖNETİCİ</span>
+                    {% endif %}
+                </div>
                 <span class="badge bg-secondary">Verdiği Puan: {{ vote.average_score|floatformat:1 }}</span>
                 <p class="mt-2 mb-0">"{{ vote.comment }}"</p>
             </div>

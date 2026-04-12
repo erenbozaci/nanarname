@@ -21,7 +21,7 @@
                 {% for u in users %}
                     <tr>
                         <td>{{ u.email }}</td>
-                        <td>{{ u.username }}</td>
+                        <td><a href="{% url 'movies:user_profile' u.id %}">{{ u.username }}</a></td>
                         <td>
                             {% if u.is_staff %}
                                 <span class="badge bg-success">YÖNETİCİ (Admin)</span>

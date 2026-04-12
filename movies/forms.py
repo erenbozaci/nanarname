@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from .models import Movie, VisitorMessage
+from .models import Movie, UserProfile, VisitorMessage
 
 
 class MovieForm(forms.ModelForm):
@@ -50,6 +50,15 @@ class UserRegistrationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email')
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['description', 'avatar']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Kendiniz hakkında kısa bir tanıtım yazın...'}),
+        }
 
 
 class CustomLoginForm(AuthenticationForm):

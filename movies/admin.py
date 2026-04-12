@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, UserVote, VisitorMessage, UserBan
+from .models import Movie, UserProfile, UserVote, VisitorMessage, UserBan
 
 
 @admin.register(Movie)
@@ -12,6 +12,12 @@ class MovieAdmin(admin.ModelAdmin):
 class UserVoteAdmin(admin.ModelAdmin):
     list_display = ('movie', 'user', 'average_score')
     search_fields = ('movie__title', 'user__username')
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'updated_at')
+    search_fields = ('user__username',)
 
 
 @admin.register(VisitorMessage)

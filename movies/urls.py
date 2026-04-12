@@ -12,7 +12,9 @@ urlpatterns = [
     path('<int:pk>/delete/', views.delete_movie, name='delete'),
     path('<int:pk>/vote/', views.vote, name='vote'),
     path('users/', views.users_index, name='users_index'),
+    path('users/<int:user_id>/', views.user_profile, name='user_profile'),
     path('users/<int:user_id>/toggle-admin/', views.toggle_admin, name='toggle_admin'),
     path('users/<int:user_id>/manage/', views.manage_user, name='manage_user'),
+    path('profile/', views.edit_profile, name='edit_profile'),
     path('visitors-book/', views.visitors_book, name='visitors_book'),
 ]
