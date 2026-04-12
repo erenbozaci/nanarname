@@ -1,6 +1,8 @@
-# EksiCaciklar (Django)
+# Nanarname
 
-Bu branch, projeyi ASP.NET MVC'den Python/Django yapısına taşır.
+### Branchlerimiz
+`nanarname`: Ana sistemizin olduğu branch
+`toxic-model`: Toksisite modelimizi eğittiğimiz ve test ettiğimiz branch.
 
 ## Kurulum
 
