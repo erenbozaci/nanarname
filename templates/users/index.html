@@ -1,76 +1,142 @@
 {% extends "base.html" %}
 {% block title %}Kullanıcı Yönetimi{% endblock %}
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white">
-            <h3 class="mb-0">👥 Kullanıcı Yönetim Paneli</h3>
+<div class="user-management-page">
+<div class="vaporwave-user-management-full">
+    <div class="vaporwave-user-header">
+        <div class="vaporwave-user-title">
+            <span class="title-main">👥 KULLANICI YÖNETİM PANELİ</span>
+            <span class="title-sub">◆ ネオン・コントロール ◆ VAPORWAVE EDITION</span>
         </div>
-        <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Kullanıcı</th>
-                        <th>Rol Durumu</th>
-                        <th>Ban Durumu</th>
-                        <th>İşlem</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for u in users %}
-                    <tr>
-                        <td>{{ u.email }}</td>
-                        <td><a href="{% url 'movies:user_profile' u.id %}">{{ u.username }}</a></td>
-                        <td>
-                            {% if u.is_staff %}
-                                <span class="badge bg-success">YÖNETİCİ (Admin)</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Üye (User)</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if u.ban and u.ban.is_active %}
-                                {% if u.ban.is_indefinite %}
-                                    <span class="badge bg-danger">Süresiz Ban</span>
-                                {% else %}
-                                    <span class="badge bg-warning">{{ u.ban.banned_until|date:"d.m.Y H:i" }}'a kadar</span>
-                                {% endif %}
-                            {% else %}
-                                <span class="badge bg-success">Aktif</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if user.id != u.id %}
-                                <div class="d-flex flex-column gap-2">
-                                    <form method="post" action="{% url 'movies:toggle_admin' u.id %}">
-                                        {% csrf_token %}
-                                        {% if u.is_staff %}
-                                            <button class="btn btn-sm btn-outline-danger" type="submit">Adminliği Al</button>
-                                        {% else %}
-                                            <button class="btn btn-sm btn-outline-success" type="submit">Admin Yap</button>
-                                        {% endif %}
-                                    </form>
-                                    <form class="d-flex flex-wrap align-items-center gap-1" method="post" action="{% url 'movies:manage_user' u.id %}">
-                                        {% csrf_token %}
-                                        <input type="number" name="ban_days" min="1" class="form-control form-control-sm" style="width: 80px;" placeholder="Gün">
-                                        <button class="btn btn-sm btn-warning" name="action" value="ban_temp" type="submit">Banla</button>
-                                        <button class="btn btn-sm btn-danger" name="action" value="ban_indef" type="submit">Süresiz</button>
-                                        {% if u.ban and u.ban.is_active %}
-                                            <button class="btn btn-sm btn-success" name="action" value="lift" type="submit">Ban Kaldır</button>
-                                        {% endif %}
-                                        <button class="btn btn-sm btn-outline-danger" name="action" value="delete" type="submit" onclick="return confirm('Bu kullanıcı hesabını kalıcı olarak silmek istediğinizden emin misiniz?');">Sil</button>
-                                    </form>
-                                </div>
-                            {% else %}
-                                <span class="text-muted small">Kendiniz</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="vaporwave-user-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ users|length }}</span>
+                <span class="stat-label">TOPLAM KULLANICI</span>
+            </div>
+            {% if search_query %}
+            <div class="stat-item">
+                <span class="stat-number">{{ users|length }}</span>
+                <span class="stat-label">ARAMA SONUCU</span>
+            </div>
+            {% endif %}
         </div>
     </div>
+
+    <div class="vaporwave-user-content">
+        <div class="vaporwave-search-section">
+            <div class="search-form-container">
+                <form method="get" class="search-form">
+                    <div class="search-input-group">
+                        <input type="text" name="search" value="{{ search_query }}" class="vaporwave-search-input-enhanced" placeholder="🔍 Kullanıcı ara... (kullanıcı adı veya email)">
+                        <button type="submit" class="vaporwave-search-btn-enhanced">SEARCH</button>
+                        {% if search_query %}
+                            <a href="{% url 'movies:users_index' %}" class="vaporwave-clear-btn-enhanced">CLEAR</a>
+                        {% endif %}
+                    </div>
+                    {% if search_query %}
+                        <div class="search-results-info">
+                            🔍 "{{ search_query }}" için {{ users|length }} kullanıcı bulundu
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="vaporwave-table-section">
+            <div class="table-container">
+                <table class="vaporwave-user-table-enhanced">
+                    <thead>
+                        <tr class="table-header-row">
+                            <th class="header-cell">📧 EMAIL</th>
+                            <th class="header-cell">👤 KULLANICI ADI</th>
+                            <th class="header-cell">⚡ ROL DURUMU</th>
+                            <th class="header-cell">🚫 BAN DURUMU</th>
+                            <th class="header-cell">🎮 İŞLEMLER</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in users %}
+                        <tr class="user-row" data-user-id="{{ u.id }}">
+                            <td class="data-cell email-cell">{{ u.email }}</td>
+                            <td class="data-cell username-cell">
+                                <a href="{% url 'movies:user_profile' u.id %}" class="username-link">{{ u.username }}</a>
+                            </td>
+                            <td class="data-cell role-cell">
+                                {% if u.is_staff %}
+                                    <span class="vaporwave-badge-admin-enhanced">YÖNETİCİ</span>
+                                {% else %}
+                                    <span class="vaporwave-badge-user-enhanced">ÜYE</span>
+                                {% endif %}
+                            </td>
+                            <td class="data-cell ban-cell">
+                                {% if u.ban and u.ban.is_active %}
+                                    {% if u.ban.is_indefinite %}
+                                        <span class="vaporwave-badge-ban-enhanced">SÜRESİZ BAN</span>
+                                    {% else %}
+                                        <span class="vaporwave-badge-tempban-enhanced">{{ u.ban.banned_until|date:"d.m.Y H:i" }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="vaporwave-badge-active-enhanced">AKTİF</span>
+                                {% endif %}
+                            </td>
+                            <td class="data-cell actions-cell">
+                                {% if user.id != u.id %}
+                                    <div class="action-buttons-group">
+                                        <form method="post" action="{% url 'movies:toggle_admin' u.id %}" class="action-form">
+                                            {% csrf_token %}
+                                            {% if u.is_staff %}
+                                                <button class="vaporwave-action-btn-enhanced vaporwave-remove-admin-enhanced" type="submit" title="Adminlikten Çıkar">
+                                                    👑➖ ADMIN AL
+                                                </button>
+                                            {% else %}
+                                                <button class="vaporwave-action-btn-enhanced vaporwave-make-admin-enhanced" type="submit" title="Admin Yap">
+                                                    👑➕ ADMIN YAP
+                                                </button>
+                                            {% endif %}
+                                        </form>
+
+                                        <div class="ban-controls">
+                                            <form class="ban-form" method="post" action="{% url 'movies:manage_user' u.id %}">
+                                                {% csrf_token %}
+                                                <div class="ban-input-group">
+                                                    <input type="number" name="ban_days" min="1" class="vaporwave-ban-input" placeholder="Gün">
+                                                    <button class="vaporwave-ban-btn vaporwave-ban-temp-enhanced" name="action" value="ban_temp" type="submit" title="Geçici Ban">
+                                                        ⏰ BAN
+                                                    </button>
+                                                </div>
+                                                <div class="ban-action-buttons">
+                                                    <button class="vaporwave-ban-btn vaporwave-ban-indef-enhanced" name="action" value="ban_indef" type="submit" title="Süresiz Ban">
+                                                        🚫 SÜRESİZ
+                                                    </button>
+                                                    {% if u.ban and u.ban.is_active %}
+                                                        <button class="vaporwave-ban-btn vaporwave-unban-enhanced" name="action" value="lift" type="submit" title="Ban Kaldır">
+                                                            ✅ KALDIR
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <form method="post" action="{% url 'movies:manage_user' u.id %}" class="action-form">
+                                            {% csrf_token %}
+                                            <button class="vaporwave-action-btn-enhanced vaporwave-delete-enhanced" name="action" value="delete" type="submit" 
+                                                    onclick="return confirm('Bu kullanıcı hesabını kalıcı olarak silmek istediğinizden emin misiniz?');" 
+                                                    title="Kullanıcıyı Sil">
+                                                🗑️ SİL
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% else %}
+                                    <span class="self-indicator">🎭 KENDİNİZ</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 {% endblock %}

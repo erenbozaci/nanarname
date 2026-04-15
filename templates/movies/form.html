@@ -2,14 +2,23 @@
 {% block title %}{{ page_title }} - EKŞİ CACIKLAR{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header"><h3 class="mb-0">{{ page_title }}</h3></div>
-        <div class="card-body">
+    <div class="panel">
+        <span class="panel-title">{{ page_title }} ◆ ネオン・フォーム ◆</span>
+        <div style="padding: 20px; position: relative;">
+            <div class="form-decorations"></div>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-success">Kaydet</button>
-                <a class="btn btn-secondary" href="{% url 'movies:index' %}">İptal</a>
+                <div class="vaporwave-form-grid">
+                    {{ form.as_p }}
+                </div>
+                <div class="form-actions" style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                    <button type="submit" class="retro-button vaporwave-submit-btn" style="background: linear-gradient(45deg, var(--vapor-pink), var(--vapor-magenta)); border-color: var(--vapor-magenta); color: #000; width: auto; min-width: 120px;">
+                        💾 KAYDET
+                    </button>
+                    <a class="retro-button vaporwave-cancel-btn" href="{% url 'movies:index' %}" style="background: linear-gradient(45deg, var(--vapor-cyan), var(--accent-purple)); border-color: var(--accent-purple); color: #000; width: auto; min-width: 120px; text-align: center;">
+                        ❌ İPTAL
+                    </a>
+                </div>
             </form>
         </div>
     </div>

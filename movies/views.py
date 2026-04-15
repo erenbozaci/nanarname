@@ -159,10 +159,22 @@ def refresh_user_ban_status(user):
 
 @user_passes_test(is_admin)
 def users_index(request):
+    search_query = request.GET.get('search', '').strip()
     users = User.objects.order_by('username').select_related('ban')
+    
+    if search_query:
+        users = users.filter(
+            Q(username__icontains=search_query) | 
+            Q(email__icontains=search_query)
+        )
+    
     for u in users:
         refresh_user_ban_status(u)
-    return render(request, 'users/index.html', {'users': users})
+    
+    return render(request, 'users/index.html', {
+        'users': users,
+        'search_query': search_query
+    })
 
 
 @user_passes_test(is_admin)
