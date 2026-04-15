@@ -21,3 +21,10 @@ python manage.py runserver
 - `/accounts/login/` giriş
 - `/accounts/register/` kayıt
 - `/movies/users/` kullanıcı rol yönetimi (admin)
+
+ Emine TABAN
+ Batuhan ÖZDEMİR
+ Eren BOZACI
+
+
+
