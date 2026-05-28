@@ -34,6 +34,7 @@ urlpatterns = [
         name='login',
     ),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('api/kotusoz/', movie_views.check_bad_words, name='check_bad_words'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

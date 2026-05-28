@@ -2,14 +2,16 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, User
 from django.db.models import Avg, Count, Prefetch, Q
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from datetime import timedelta
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import MovieForm, UserRegistrationForm, UserProfileForm, VoteForm, VisitorMessageForm
 from .models import Movie, UserProfile, UserVote, VisitorMessage, UserBan
-
+from .toxic_utils import predict_text, model, best_threshold, leetspeak_to_normal, device, tokenizer
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -298,4 +300,27 @@ def visitors_book(request):
     return render(request, 'movies/visitors_book.html', {
         'messages': messages,
         'form': form
+    })
+
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def check_bad_words(request):
+    text = request.POST.get('text', '')
+    
+    if not text:
+        return JsonResponse({
+            'error': 'Text parameter is required',
+            'is_toxic': False,
+            'cleaned_text': ''
+        }, status=400)
+    
+    
+    # Convert text to lowercase for comparison
+    text_lower = leetspeak_to_normal(text.lower())
+    is_toxic = predict_text(model, tokenizer, text_lower, device, threshold=best_threshold)
+
+    return JsonResponse({
+        'is_toxic': is_toxic,
+        'text': text_lower
     })
