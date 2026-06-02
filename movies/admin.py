@@ -10,8 +10,19 @@ class MovieAdmin(admin.ModelAdmin):
 
 @admin.register(UserVote)
 class UserVoteAdmin(admin.ModelAdmin):
-    list_display = ('movie', 'user', 'average_score')
-    search_fields = ('movie__title', 'user__username')
+    # is_approved ve comment alanlarını ekledik
+    list_display = ('movie', 'user', 'average_score', 'is_approved')
+    list_filter = ('is_approved', 'movie') # Onay durumuna göre filtreleme
+    search_fields = ('movie__title', 'user__username', 'comment')
+    actions = ['approve_votes', 'disapprove_votes']
+
+    def approve_votes(self, request, queryset):
+        queryset.update(is_approved=True)
+    approve_votes.short_description = "Seçili yorumları onayla"
+
+    def disapprove_votes(self, request, queryset):
+        queryset.update(is_approved=False)
+    disapprove_votes.short_description = "Seçili yorumları reddet"
 
 
 @admin.register(UserProfile)

@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 
 from .forms import MovieForm, UserRegistrationForm, UserProfileForm, VoteForm, VisitorMessageForm
 from .models import Movie, UserProfile, UserVote, VisitorMessage, UserBan
@@ -72,7 +73,7 @@ def details(request, pk):
         Movie.objects.prefetch_related(Prefetch('user_votes', queryset=UserVote.objects.select_related('user'))),
         pk=pk,
     )
-    comments = movie.user_votes.exclude(comment='').order_by('-id')
+    comments = movie.user_votes.exclude(comment='').filter(is_approved=True).order_by('-id')
     for vote in comments:
         if not hasattr(vote.user, 'profile'):
             UserProfile.objects.get_or_create(user=vote.user)
@@ -130,7 +131,24 @@ def vote(request, pk):
     if request.method != 'POST':
         return HttpResponseForbidden()
     form = VoteForm(request.POST)
+    
     if form.is_valid():
+        comment_text = form.cleaned_data.get('comment', '')
+        is_approved = True # Varsayılan olarak yorum onaylı kabul edilir
+        
+        # Eğer yorum yazılmışsa toksiklik analizi yap
+        if comment_text:
+            text_lower = leetspeak_to_normal(comment_text.lower())
+            is_toxic = predict_text(model, tokenizer, text_lower, device, threshold=best_threshold)
+            
+            if is_toxic:
+                is_approved = False # Toksikse onayı kaldır (gizle)
+                messages.warning(request, "Yorumunuz şüpheli içerik barındırdığı için moderasyon incelemesine alınmıştır.")
+            else:
+                messages.success(request, "Yorumunuz ve puanınız başarıyla kaydedildi.")
+        else:
+            messages.success(request, "Puanınız başarıyla kaydedildi.")
+
         UserVote.objects.update_or_create(
             movie=movie,
             user=request.user,
@@ -140,7 +158,8 @@ def vote(request, pk):
                 'score_visuals': form.cleaned_data['sVisuals'],
                 'score_sound': form.cleaned_data['sSound'],
                 'score_editing': form.cleaned_data['sEditing'],
-                'comment': form.cleaned_data['comment'],
+                'comment': comment_text,
+                'is_approved': is_approved, # Yeni eklediğimiz alanı buraya gönderiyoruz
             },
         )
     return redirect('movies:details', pk=movie.pk)

@@ -25,60 +25,69 @@
                 </tbody>
             </table>
             {% if user.is_staff %}
-                <a class="btn btn-warning" href="{% url 'movies:edit' movie.pk %}">Düzenle</a>
-                <a class="btn btn-danger" href="{% url 'movies:delete' movie.pk %}">Sil</a>
+            <a class="btn btn-warning" href="{% url 'movies:edit' movie.pk %}">Düzenle</a>
+            <a class="btn btn-danger" href="{% url 'movies:delete' movie.pk %}">Sil</a>
             {% endif %}
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-2" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
             {% if user.is_authenticated %}
-                <h5>🗳️ Senin Oyun</h5>
-                <form action="{% url 'movies:vote' movie.pk %}" method="post">
-                    {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-4"><label>Senaryo</label><input name="sScenario" type="range" class="form-range" min="0" max="100" value="50"></div>
-                        <div class="col-md-4"><label>Oyunculuk</label><input name="sActing" type="range" class="form-range" min="0" max="100" value="50"></div>
-                        <div class="col-md-4"><label>Görsellik</label><input name="sVisuals" type="range" class="form-range" min="0" max="100" value="50"></div>
-                        <div class="col-md-6"><label>Ses</label><input name="sSound" type="range" class="form-range" min="0" max="100" value="50"></div>
-                        <div class="col-md-6"><label>Kurgu</label><input name="sEditing" type="range" class="form-range" min="0" max="100" value="50"></div>
-                    </div>
-                    <div class="mt-3">
-                        <label>Yorum</label>
-                        <textarea name="comment" class="form-control" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100 mt-3">Puanı ve Yorumu Gönder</button>
-                </form>
+            <h5>🗳️ Senin Oyun</h5>
+            <form action="{% url 'movies:vote' movie.pk %}" method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-4"><label>Senaryo</label><input name="sScenario" type="range" class="form-range" min="0" max="100" value="50"></div>
+                    <div class="col-md-4"><label>Oyunculuk</label><input name="sActing" type="range" class="form-range" min="0" max="100" value="50"></div>
+                    <div class="col-md-4"><label>Görsellik</label><input name="sVisuals" type="range" class="form-range" min="0" max="100" value="50"></div>
+                    <div class="col-md-6"><label>Ses</label><input name="sSound" type="range" class="form-range" min="0" max="100" value="50"></div>
+                    <div class="col-md-6"><label>Kurgu</label><input name="sEditing" type="range" class="form-range" min="0" max="100" value="50"></div>
+                </div>
+                <div class="mt-3">
+                    <label>Yorum</label>
+                    <textarea name="comment" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100 mt-3">Puanı ve Yorumu Gönder</button>
+            </form>
             {% else %}
-                <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'movies:details' movie.pk %}">Giriş Yap</a>
+            <a class="btn btn-primary" href="{% url 'login' %}?next={% url 'movies:details' movie.pk %}">Giriş Yap</a>
             {% endif %}
         </div>
     </div>
 
     <h3>📢 Yorumlar ({{ comments|length }})</h3>
     {% for vote in comments %}
-        <div class="card mb-2">
-            <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <a href="{% url 'movies:user_profile' vote.user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
-                        {% if vote.user.profile.avatar %}
-                            <img src="{{ vote.user.profile.avatar.url }}" alt="{{ vote.user.username }} avatar" class="rounded-circle border" style="width:48px; height:48px; object-fit:cover;">
-                        {% else %}
-                            <div class="rounded-circle border bg-secondary text-white d-flex align-items-center justify-content-center" style="width:48px; height:48px;font-size:1.1rem;">{{ vote.user.username|slice:":1"|upper }}</div>
-                        {% endif %}
-                        <span class="fw-bold ms-2">{{ vote.user.username }}</span>
-                    </a>
-                    {% if vote.user.is_staff %}
-                        <span class="badge bg-warning text-dark">YÖNETİCİ</span>
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <a href="{% url 'movies:user_profile' vote.user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                    {% if vote.user.profile.avatar %}
+                    <img src="{{ vote.user.profile.avatar.url }}" alt="{{ vote.user.username }} avatar" class="rounded-circle border" style="width:48px; height:48px; object-fit:cover;">
+                    {% else %}
+                    <div class="rounded-circle border bg-secondary text-white d-flex align-items-center justify-content-center" style="width:48px; height:48px;font-size:1.1rem;">{{ vote.user.username|slice:":1"|upper }}</div>
                     {% endif %}
-                </div>
-                <span class="badge bg-secondary">Verdiği Puan: {{ vote.average_score|floatformat:1 }}</span>
-                <p class="mt-2 mb-0">"{{ vote.comment }}"</p>
+                    <span class="fw-bold ms-2">{{ vote.user.username }}</span>
+                </a>
+                {% if vote.user.is_staff %}
+                <span class="badge bg-warning text-dark">YÖNETİCİ</span>
+                {% endif %}
             </div>
+            <span class="badge bg-secondary">Verdiği Puan: {{ vote.average_score|floatformat:1 }}</span>
+            <p class="mt-2 mb-0">"{{ vote.comment }}"</p>
         </div>
+    </div>
     {% empty %}
-        <div class="alert alert-info">Henüz yorum yapılmamış.</div>
+    <div class="alert alert-info">Henüz yorum yapılmamış.</div>
     {% endfor %}
 </div>
 {% endblock %}

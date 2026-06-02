@@ -61,3 +61,7 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 *.pt
+
+# Visual Studio gizli önbellek ve ayar klasörü
+.vs/
+*.vsidx

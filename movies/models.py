@@ -109,6 +109,14 @@ class UserVote(models.Model):
     )
     comment = models.TextField(blank=True)
 
+    score_editing = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    comment = models.TextField(blank=True)
+    
+    # YENİ EKLENEN ALAN: Varsayılan olarak True, sadece toksikse False yapacağız
+    is_approved = models.BooleanField(default=True, verbose_name="Onaylandı mı?")
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['movie', 'user'], name='unique_movie_vote_per_user')

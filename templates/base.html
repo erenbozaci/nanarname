@@ -10,27 +10,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-<div class="retro-container">
-    <header>
-        <h1 class="retro-title">NANARNAME</h1>
-        <div class="subtitle">~ ネオン・ドリーム ~ Vaporwave Edition ~</div>
-        <div class="vaporwave-symbols">▲ ◆ ◇ □ △ ◈</div>
-        <div style="font-size:10px;color:#aaa;margin-top:5px;">System.Time: {% now "H:i:s" %}</div>
-    </header>
+    <div class="retro-container">
+        <header>
+            <h1 class="retro-title">NANARNAME</h1>
+            <div class="subtitle">~ ネオン・ドリーム ~ Vaporwave Edition ~</div>
+            <div class="vaporwave-symbols">▲ ◆ ◇ □ △ ◈</div>
+            <div style="font-size:10px;color:#aaa;margin-top:5px;">System.Time: {% now "H:i:s" %}</div>
+        </header>
 
-    <div class="marquee-container">
-        <marquee scrollamount="10" scrolldelay="100">
-            *** ネオン・ドリーム *** VAPORWAVE CINEMA *** ネオン・ドリーム *** Welcome to the Future Past *** ネオン・ドリーム ***
-        </marquee>
-    </div>
+        <div class="marquee-container">
+            <marquee scrollamount="10" scrolldelay="100">
+                *** ネオン・ドリーム *** VAPORWAVE CINEMA *** ネオン・ドリーム *** Welcome to the Future Past *** ネオン・ドリーム ***
+            </marquee>
+        </div>
 
-    <div class="main-layout">
-        <aside class="sidebar-left">
-            <div class="panel">
-                <span class="panel-title">NAVİGASYON</span>
-                <a class="menu-btn" href="{% url 'movies:index' %}">🏠 ANASAYFA</a>
-                <a class="menu-btn" href="{% url 'movies:index' %}">🥒 TÜM FİLMLER</a>
-                {% if user.is_authenticated %}
+        <div class="main-layout">
+            <aside class="sidebar-left">
+                <div class="panel">
+                    <span class="panel-title">NAVİGASYON</span>
+                    <a class="menu-btn" href="{% url 'movies:index' %}">🏠 ANASAYFA</a>
+                    <a class="menu-btn" href="{% url 'movies:index' %}">🥒 TÜM FİLMLER</a>
+                    {% if user.is_authenticated %}
                     <div style="border-top:1px dashed #555; margin:5px 0;"></div>
                     <div style="color:var(--matrix-green);font-size:12px;padding:5px;">User: {{ user.username }}</div>
                     <a class="menu-btn" href="{% url 'movies:user_profile' user.id %}">👤 Profilim</a>
@@ -38,39 +38,106 @@
                         {% csrf_token %}
                         <button type="submit" class="retro-button" style="background:red;color:white;border-color:darkred;">ÇIKIŞ YAP</button>
                     </form>
-                {% else %}
+                    {% else %}
                     <div style="border-top:1px dashed #555; margin:5px 0;"></div>
                     <a class="menu-btn" style="color:yellow;" href="{% url 'login' %}">🔑 GİRİŞ YAP</a>
                     <a class="menu-btn" style="color:cyan;" href="{% url 'register' %}">📝 KAYIT OL</a>
-                {% endif %}
-                {% if user.is_staff %}
+                    {% endif %}
+                    {% if user.is_staff %}
                     <div style="border-top:1px dashed #555; margin:10px 0;"></div>
                     <a class="menu-btn" style="color:#ff00ff;" href="{% url 'movies:create' %}">🛠 FİLM EKLE</a>
                     <a class="menu-btn" style="color:cyan;" href="{% url 'movies:users_index' %}">👥 KULLANICILAR</a>
-                {% endif %}
-            </div>
-        </aside>
-        <main>
-            {% block content %}{% endblock %}
-        </main>
-        <aside class="sidebar-right">
-            <div class="panel">
-                <span class="panel-title">DUYURULAR</span>
-                <p style="font-size:11px;">"Lütfen filmlere 0 verirken acımayın."</p>
-            </div>
+                    {% endif %}
+                </div>
+            </aside>
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+           
+        </div>
 
-            <div class="panel" style="margin-top: 20px;">
-                <span class="panel-title">📖 ZİYARETÇİ DEFTERİ</span>
-                <p style="font-size:11px; margin-bottom: 10px;">Fikirlerinizi paylaşın!</p>
-                <a class="menu-btn" href="{% url 'movies:visitors_book' %}">👥 DEFTERE BAK</a>
-            </div>
-        </aside>
+        <footer>
+            <p>&copy; 2026 Nanarname Inc.</p>
+        </footer>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Projedeki film yorum alanı (name="comment") veya ziyaretçi defteri mesaj alanını (name="message") yakala
+            const toxicInput = document.querySelector('textarea[name="comment"], textarea[name="message"]');
 
-    <footer>
-        <p>&copy; 2026 Nanarname Inc.</p>
-    </footer>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            if (toxicInput) {
+                const form = toxicInput.closest('form');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                // Uyarı mesajı için DOM elementi oluştur (Vaporwave temana uygun renklerde)
+                const warningMsg = document.createElement('div');
+                warningMsg.style.color = '#ff0000';
+                warningMsg.style.textShadow = '0 0 10px #ff0000';
+                warningMsg.style.marginTop = '10px';
+                warningMsg.style.fontWeight = 'bold';
+                warningMsg.style.display = 'none';
+                warningMsg.innerHTML = '⚠️ SİSTEM UYARISI: Toksik/uygunsuz ifade tespit edildi! Lütfen metni düzeltin.';
+
+                // Uyarı mesajını metin kutusunun hemen altına yerleştir
+                toxicInput.parentNode.insertBefore(warningMsg, toxicInput.nextSibling);
+
+                let timeout = null;
+
+                // Kullanıcı klavyede her tuşa bastığında tetiklenir
+                toxicInput.addEventListener('input', function () {
+                    clearTimeout(timeout);
+                    const text = this.value;
+
+                    // Eğer kutu boşsa veya tamamen silindiyse uyarıyı kaldır, butonu aktif et
+                    if (text.trim().length === 0) {
+                        warningMsg.style.display = 'none';
+                        submitBtn.disabled = false;
+                        toxicInput.style.borderColor = '';
+                        toxicInput.style.boxShadow = '';
+                        return;
+                    }
+
+                    // Performans optimizasyonu (Debouncing):
+                    // Kullanıcı seri şekilde yazarken her harfte sunucuya istek atmamak için
+                    // yazmayı bıraktıktan 500 milisaniye sonra modeli tetikliyoruz.
+                    timeout = setTimeout(async () => {
+                        const formData = new FormData();
+                        formData.append('text', text);
+
+                        try {
+                            // API endpointine arka planda POST isteği at
+                            const response = await fetch('/api/kotusoz/', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            const data = await response.json();
+
+                            if (data.is_toxic) {
+                                // Model metni TOKSİK (1) olarak işaretlerse:
+
+                                // BUTON KİLİDİNİ İPTAL ETTİK:
+                                // submitBtn.disabled = true; 
+                                submitBtn.disabled = false; // Her ihtimale karşı butonu açık tut
+
+                                warningMsg.style.display = 'block'; // Uyarıyı göster
+                                toxicInput.style.borderColor = '#ff0000'; // Kutuyu kırmızıya boya
+                                toxicInput.style.boxShadow = '0 0 15px rgba(255, 0, 0, 0.6)';
+                            } else {
+                                // Model metni TEMİZ (0) olarak işaretlerse:
+                                submitBtn.disabled = false; // Kilidi aç
+                                warningMsg.style.display = 'none'; // Uyarıyı gizle
+                                toxicInput.style.borderColor = 'var(--vapor-cyan)'; // Orijinal Vaporwave rengine dön
+                                toxicInput.style.boxShadow = '0 0 10px rgba(0, 255, 255, 0.3)';
+                            }
+                        } catch (error) {
+                            console.error('Yapay zeka modeliyle bağlantı kurulamadı:', error);
+                        }
+                    }, 500);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
