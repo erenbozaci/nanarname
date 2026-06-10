@@ -9,6 +9,8 @@
 * Emine TABAN (032490060)
 * Batuhan ÖZDEMİR (032490064)
 
+### [Drive Linki](https://drive.google.com/drive/folders/1mZD5N3nDHRiEa-_DUv3_SHZlrnPHnPi_?usp=sharing)
+
 ## Proje Özeti
 
 Nanar Kültürdeki Sinema Filmlerini Değerlendirme Sitesi, kullanıcıların filmler hakkında yorum yapabildiği ve puan verebildiği interaktif bir web platformudur. Projenin yenilikçi yönü, Doğal Dil İşleme (NLP) algoritmaları ve dbmdz/bert-base-turkish-cased dönüştürücü (transformer) mimarisi kullanarak geliştirilen Yapay Zeka destekli Akıllı Filtreleme sistemidir. Sistem, nefret söylemi ve argo ifadeleri tespit edip gizlemek yerine, cümlenin bağlamına uygun pozitif kelimelerle dinamik olarak değiştirerek güvenli bir deneyim sunar.
@@ -20,6 +22,63 @@ Sosyal medya ve açık platformlardaki anonimlik, siber zorbalığı artırmakta
 ## Özgün Değer
 
 Klasik "yıkıcı" sansür mekanizmaları (kelimeleri sansürleme veya silme) yerine "yapıcı" bir sistem sunulmuştur. Kötü kelimeler tespit edildiğinde sistem havuzundaki "harika", "şahane" gibi bağlama zarar vermeyen pozitif kelimelerle otomatik olarak değiştirilir.
+
+## Kurulum ve Çalıştırma
+
+Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları takip edebilirsiniz.
+
+### 1. Gereksinimler
+
+Proje çalışmak için Python 3.10+ sürümüne ihtiyaç duyar. Ayrıca derin öğrenme modeli için `torch` ve `transformers` kütüphaneleri kullanılmaktadır.
+
+### 2. Sanal Ortam Oluşturma
+
+Projeyi izole bir ortamda çalıştırmak için bir sanal ortam oluşturmanız önerilir:
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Bağımlılıkların Yüklenmesi
+
+Gerekli tüm kütüphaneleri `requirements.txt` dosyasından yükleyin:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Veritabanı Yapılandırması
+
+Django veritabanı tablolarını oluşturmak için migrasyonları uygulayın:
+
+```bash
+python manage.py migrate
+```
+
+Yönetim paneline erişmek için bir süper kullanıcı (admin) oluşturun:
+
+```bash
+python manage.py createsuperuser
+```
+
+### 5. Uygulamayı Çalıştırma
+
+Geliştirme sunucusunu başlatın:
+
+```bash
+python manage.py runserver
+```
+
+Sunucu başladıktan sonra tarayıcınızdan `http://127.0.0.1:8000/` adresine giderek projeye erişebilirsiniz.
+
+### Önemli Not
+Projenin akıllı filtreleme özelliğinin çalışması için `models/best_toxic_model.pt` dosyasının mevcut olması gerekmektedir. Eğer bu dosya eksikse sistem hata verecektir.
 
 ## Python Uygulaması ve Mimarisi
 
@@ -88,10 +147,6 @@ En İyi Eşik Değeri (Best Threshold): 0.46
 | 0 | 44761 | 1558 |
 | 1 | 2116 | 46125 |
 
-
- Emine TABAN
- Batuhan ÖZDEMİR
- Eren BOZACI
-
+---
 
 
