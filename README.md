@@ -25,10 +25,40 @@ Klasik "yıkıcı" sansür mekanizmaları (kelimeleri sansürleme veya silme) ye
 
 ## Kurulum ve Çalıştırma
 
+Projeyi çalıştırmak için iki ana yöntem bulunmaktadır: Docker (önerilen) ve Yerel Kurulum.
+
+### A. Docker ile Çalıştırma (Önerilen)
+
+Docker, projenin tüm bağımlılıklarını (Python, PyTorch, BERT modeli vb.) otomatik olarak kurar ve izole bir ortamda çalıştırır.
+
+#### 1. Gereksinimler
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+#### 2. Uygulamayı Başlatma
+Proje dizininde aşağıdaki komutu çalıştırın:
+
+```bash
+docker compose up --build
+```
+
+Bu komut:
+- Docker imajını oluşturur.
+- Gerekli tüm kütüphaneleri yükler.
+- **BERT modelini otomatik olarak indirir ve önbelleğe alır.**
+- Veritabanı migrasyonlarını yapar.
+- Uygulamayı `http://localhost:8000` adresinde başlatır.
+
+#### 3. Durdurma
+```bash
+docker compose down
+```
+
+### B. Yerel Kurulum (Geleneksel)
+
 Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları takip edebilirsiniz.
 
-### 1. Gereksinimler
-
+#### 1. Gereksinimler
 Proje çalışmak için Python 3.10+ sürümüne ihtiyaç duyar. Ayrıca derin öğrenme modeli için `torch` ve `transformers` kütüphaneleri kullanılmaktadır.
 
 ### 2. Sanal Ortam Oluşturma
