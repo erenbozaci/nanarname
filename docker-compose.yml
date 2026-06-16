@@ -3,6 +3,7 @@ services:
     build: .
     volumes:
       - .:/app
+      - /app/staticfiles
     ports:
       - "8000:8000"
     environment:

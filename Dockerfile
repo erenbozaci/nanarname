@@ -27,6 +27,8 @@ RUN python -c "from transformers import AutoModel, AutoTokenizer; AutoModel.from
 # Copy project
 COPY . /app/
 
+RUN python manage.py collectstatic --noinput
+
 # Expose the port the app runs on
 EXPOSE 8000
 

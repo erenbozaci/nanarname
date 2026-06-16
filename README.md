@@ -23,92 +23,78 @@ Sosyal medya ve açık platformlardaki anonimlik, siber zorbalığı artırmakta
 
 Klasik "yıkıcı" sansür mekanizmaları (kelimeleri sansürleme veya silme) yerine "yapıcı" bir sistem sunulmuştur. Kötü kelimeler tespit edildiğinde sistem havuzundaki "harika", "şahane" gibi bağlama zarar vermeyen pozitif kelimelerle otomatik olarak değiştirilir.
 
-## Kurulum ve Çalıştırma
+## Kurulum ve Çalıştırma (Docker)
 
-Projeyi çalıştırmak için iki ana yöntem bulunmaktadır: Docker (önerilen) ve Yerel Kurulum.
+Bu proje, kurulum sürecini basitleştirmek ve çevre farklılıklarını ortadan kaldırmak için tamamen Dockerize edilmiştir. Docker; Python, PyTorch ve BERT modeli gibi tüm bağımlılıkları otomatik olarak yapılandırır.
 
-### A. Docker ile Çalıştırma (Önerilen)
+### 1. Projenin İndirilmesi
+Öncelikle projeyi bilgisayarınıza klonlayın ve proje dizinine gidin:
 
-Docker, projenin tüm bağımlılıklarını (Python, PyTorch, BERT modeli vb.) otomatik olarak kurar ve izole bir ortamda çalıştırır.
+```bash
+git clone https://github.com/erenbozaci/nanarname.git
+cd nanarname
+```
 
-#### 1. Gereksinimler
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+### 2. Model Dosyasının Hazırlanması
+Projenin akıllı filtreleme özelliğinin çalışması için eğitilmiş model dosyasını eklemeniz gerekmektedir:
+- `best_toxic_model.pt` dosyasını projenin kök dizininde bulunan **`models/`** klasörünün içine yerleştirin.
+- Bu dosya eksik olduğunda sistem model yükleme hatası verecektir.
 
-#### 2. Uygulamayı Başlatma
-Proje dizininde aşağıdaki komutu çalıştırın:
+### 3. Gereksinimler
+Sisteminizde aşağıdaki araçların yüklü olduğundan emin olun:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows ve macOS için) veya Docker Engine (Linux için).
+- [Docker Compose](https://docs.docker.com/compose/install/) (Genellikle Docker Desktop ile birlikte gelir).
+
+### 4. Uygulamayı Başlatma
+Terminalinizi veya komut satırınızı proje kök dizininde açın ve aşağıdaki komutu çalıştırın:
 
 ```bash
 docker compose up --build
 ```
 
-Bu komut:
-- Docker imajını oluşturur.
-- Gerekli tüm kütüphaneleri yükler.
-- **BERT modelini otomatik olarak indirir ve önbelleğe alır.**
-- Veritabanı migrasyonlarını yapar.
-- Uygulamayı `http://localhost:8000` adresinde başlatır.
+**Bu komut sırasıyla şunları gerçekleştirir:**
+- Gerekli Python sürümünü ve sistem bağımlılıklarını hazırlar.
+- `requirements.txt` dosyasındaki kütüphaneleri yükler.
+- **BERT modelini (dbmdz/bert-base-turkish-cased) indirir ve imaj içerisine önbelleğe alır.**
+- Veritabanı migrasyonlarını (migrations) otomatik olarak uygular.
+- Statik dosyaları toplar (collectstatic).
+- Geliştirme sunucusunu `http://localhost:8000` adresinde başlatır.
 
-#### 3. Durdurma
-```bash
-docker compose down
-```
+### 5. Uygulamaya Erişim
+Sunucu ayağa kalktıktan sonra tarayıcınızdan aşağıdaki adreslere erişebilirsiniz:
+- **Web Sitesi:** [http://localhost:8000](http://localhost:8000)
+- **Yönetim Paneli:** [http://localhost:8000/admin](http://localhost:8000/admin)
 
-### B. Yerel Kurulum (Geleneksel)
-
-Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları takip edebilirsiniz.
-
-#### 1. Gereksinimler
-Proje çalışmak için Python 3.10+ sürümüne ihtiyaç duyar. Ayrıca derin öğrenme modeli için `torch` ve `transformers` kütüphaneleri kullanılmaktadır.
-
-### 2. Sanal Ortam Oluşturma
-
-Projeyi izole bir ortamda çalıştırmak için bir sanal ortam oluşturmanız önerilir:
+### 6. Yönetici (Admin) Hesabı Oluşturma
+Sisteme giriş yapabilmek ve filmleri yönetebilmek için bir süper kullanıcı (superuser) oluşturmanız gerekir. Uygulama çalışırken yeni bir terminal açın ve şu komutu çalıştırın:
 
 ```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Linux/macOS
-python3 -m venv venv
-source venv/bin/activate
+docker compose exec web python manage.py createsuperuser
 ```
+Ardından ekrandaki talimatları izleyerek kullanıcı adı, e-posta ve şifrenizi belirleyin.
 
-### 3. Bağımlılıkların Yüklenmesi
+### 7. Faydalı Komutlar
 
-Gerekli tüm kütüphaneleri `requirements.txt` dosyasından yükleyin:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Veritabanı Yapılandırması
-
-Django veritabanı tablolarını oluşturmak için migrasyonları uygulayın:
-
-```bash
-python manage.py migrate
-```
-
-Yönetim paneline erişmek için bir süper kullanıcı (admin) oluşturun:
-
-```bash
-python manage.py createsuperuser
-```
-
-### 5. Uygulamayı Çalıştırma
-
-Geliştirme sunucusunu başlatın:
-
-```bash
-python manage.py runserver
-```
-
-Sunucu başladıktan sonra tarayıcınızdan `http://127.0.0.1:8000/` adresine giderek projeye erişebilirsiniz.
+- **Arka Planda Çalıştırma:** Uygulamayı arka planda başlatmak için:
+  ```bash
+  docker compose up -d
+  ```
+- **Logları İzleme:** Arka planda çalışan uygulamanın çıktılarını canlı görmek için:
+  ```bash
+  docker compose logs -f
+  ```
+- **Durdurma:** Konteynerleri durdurmak için:
+  ```bash
+  docker compose down
+  ```
+- **Yeniden Yapılandırma:** `requirements.txt` veya `Dockerfile` üzerinde değişiklik yaptıysanız imajı yeniden oluşturmak için:
+  ```bash
+  docker compose up --build
+  ```
 
 ### Önemli Not
-Projenin akıllı filtreleme özelliğinin çalışması için `models/best_toxic_model.pt` dosyasının mevcut olması gerekmektedir. Eğer bu dosya eksikse sistem hata verecektir.
+- **Model Dosyası:** Projenin akıllı filtreleme özelliğinin çalışması için `models/best_toxic_model.pt` dosyasının mevcut olması gerekmektedir. Eğer bu dosya eksikse sistem hata verecektir.
+- **BERT Modeli:** Akıllı filtreleme özelliğinin tam performanslı çalışabilmesi için BERT modelinin indirilmesi gerekmektedir. İlk kurulumda (build aşamasında) internet hızınıza bağlı olarak model indirme işlemi birkaç dakika sürebilir. İndirilen model Docker imajı içerisinde saklanacağı için sonraki çalıştırmalarda tekrar indirme yapılmaz.
 
 ## Python Uygulaması ve Mimarisi
 
