@@ -12,12 +12,15 @@ from django.contrib import messages
 
 from .forms import MovieForm, UserRegistrationForm, UserProfileForm, VoteForm, VisitorMessageForm
 from .models import Movie, UserProfile, UserVote, VisitorMessage, UserBan
+
+# === YAPAY ZEKA MODÜLÜ ENTEGRASYONU ===
+# Eğitilmiş BERT modelimiz ve yardımcı NLP fonksiyonlarımız (leetspeak vb.) projeye dahil ediliyor.
 from .toxic_utils import predict_text, model, best_threshold, leetspeak_to_normal, device, tokenizer
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-
+# KULLANICI YÖNETİMİ VE ANA SAYFA
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -31,6 +34,7 @@ def register(request):
 
 
 def index(request):
+    # Filmleri çekerken veritabanını yormamak için Aggregate/Annotate ile kullanıcı oylarını hesaplayarak alıyoruz.
     movies = Movie.objects.annotate(
         vote_count=Count('user_votes'),
         user_avg_scenario=Avg('user_votes__score_scenario'),
@@ -56,6 +60,7 @@ def index(request):
                 + movie.user_avg_editing
             ) / 5.0
 
+# Algoritma: Eğer film hem admin hem kullanıcı oyu aldıysa, ikisinin ortalaması "Cacık Score" olarak belirlenir.
         if movie.vote_count == 0 and movie.admin_score == 0:
             movie.cacik_score = -1
         elif movie.vote_count == 0:
@@ -69,6 +74,7 @@ def index(request):
 
 
 def details(request, pk):
+    # Sadece NLP modelimiz tarafından "onaylanmış" (is_approved=True) yani toksik olmayan yorumlar listelenir.
     movie = get_object_or_404(
         Movie.objects.prefetch_related(Prefetch('user_votes', queryset=UserVote.objects.select_related('user'))),
         pk=pk,
@@ -89,6 +95,7 @@ def details(request, pk):
     return render(request, 'movies/details.html', context)
 
 
+# EDİTÖR (ADMİN) FİLM YÖNETİM İŞLEMLERİ
 @user_passes_test(is_admin)
 def create_movie(request):
     if request.method == 'POST':
@@ -124,7 +131,7 @@ def delete_movie(request, pk):
         return redirect('movies:index')
     return render(request, 'movies/delete.html', {'movie': movie})
 
-
+# YAPAY ZEKA DESTEKLİ OY/YORUM SİSTEMİ (AKILLI SANSÜR)
 @login_required
 def vote(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
@@ -136,9 +143,12 @@ def vote(request, pk):
         comment_text = form.cleaned_data.get('comment', '')
         is_approved = True # Varsayılan olarak yorum onaylı kabul edilir
         
+        # === AKILLI SANSÜR (NLP) DEVREDE ===
         # Eğer yorum yazılmışsa toksiklik analizi yap
         if comment_text:
+            # 1. Aşama: İnternet argosu (leetspeak) manipülasyonlarını çöz (Örn: "s@lak" -> "salak")
             text_lower = leetspeak_to_normal(comment_text.lower())
+            # 2. Aşama: Matematiksel olarak optimize ettiğimiz eşik değeriyle (best_threshold) BERT modeline tahmin yaptır
             is_toxic = predict_text(model, tokenizer, text_lower, device, threshold=best_threshold)
             
             if is_toxic:
@@ -159,13 +169,14 @@ def vote(request, pk):
                 'score_sound': form.cleaned_data['sSound'],
                 'score_editing': form.cleaned_data['sEditing'],
                 'comment': comment_text,
-                'is_approved': is_approved, # Yeni eklediğimiz alanı buraya gönderiyoruz
+                'is_approved': is_approved, # NLP modelinden çıkan sonucu veritabanına işliyoruz
             },
         )
     return redirect('movies:details', pk=movie.pk)
 
-
+# KULLANICI BAN (CEZA) YÖNETİMİ
 def refresh_user_ban_status(user):
+    # Kullanıcının geçici ceza süresinin dolup dolmadığını kontrol eden sistem
     ban = getattr(user, 'ban', None)
     if not ban or ban.lifted_at is not None:
         return
@@ -200,6 +211,7 @@ def users_index(request):
 
 @user_passes_test(is_admin)
 def manage_user(request, user_id):
+    # Adminlerin toksik kullanıcıları geçici veya kalıcı olarak sistemden uzaklaştırdığı mekanizma
     if request.method != 'POST':
         return HttpResponseForbidden()
     target_user = get_object_or_404(User, pk=user_id)
@@ -266,7 +278,7 @@ def toggle_admin(request, user_id):
     target_user.save(update_fields=['is_staff'])
     return redirect('movies:users_index')
 
-
+# PROFİL VE ZİYARETÇİ DEFTERİ
 @login_required
 def user_profile(request, user_id):
     profile_user = get_object_or_404(User, pk=user_id)
@@ -321,10 +333,14 @@ def visitors_book(request):
         'form': form
     })
 
-
+# API: GERÇEK ZAMANLI TOKSİSİTE KONTROLÜ
 @require_http_methods(["POST"])
 @csrf_exempt
 def check_bad_words(request):
+    """
+    Frontend'den asenkron (AJAX) olarak gelen metinleri anlık analiz eden API ucu.
+    Yapay zeka modelini API mantığıyla çalıştırarak dinamik geri bildirim sağlar.
+    """
     text = request.POST.get('text', '')
     
     if not text:
@@ -335,8 +351,9 @@ def check_bad_words(request):
         }, status=400)
     
     
-    # Convert text to lowercase for comparison
+   # Karşılaştırma öncesi leetspeak temizliği ve küçük harf standardizasyonu
     text_lower = leetspeak_to_normal(text.lower())
+    # NLP Modelinden çıkan anlık karar
     is_toxic = predict_text(model, tokenizer, text_lower, device, threshold=best_threshold)
 
     return JsonResponse({

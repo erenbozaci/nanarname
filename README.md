@@ -163,6 +163,37 @@ En İyi Eşik Değeri (Best Threshold): 0.46
 | 0 | 44761 | 1558 |
 | 1 | 2116 | 46125 |
 
+## 📂 Proje Mimarisi ve Klasör Yapısı
+
+Bu proje, Django web framework'ü ile PyTorch tabanlı NLP (Doğal Dil İşleme) modelinin entegre çalıştığı hibrit bir mimariye sahiptir. Proje dizin yapısı ve modüllerin görevleri aşağıda detaylandırılmıştır:
+
+### ⚙️ Ana Proje ve Konfigürasyon
+* **`eksicaciklar/`**: Projenin ana ayar dizinidir (Django Root). 
+    * Sistemin veritabanı bağlantıları, güvenlik ayarları (`settings.py`), global URL yönlendirmeleri (`urls.py`) ve sunucu dağıtım konfigürasyonlarını (WSGI/ASGI) içerir.
+* **`manage.py`**: Django'nun komut satırı yöneticisidir. Sunucuyu başlatma, veritabanı migrasyonları ve test süreçleri bu dosya üzerinden yürütülür.
+* **`requirements.txt`**: Projenin bağımlılıklarını (Django, PyTorch, Transformers vb.) barındıran kütüphane listesidir.
+
+### 🧠 Web Uygulaması ve Yapay Zeka Entegrasyonu
+* **`movies/`**: Sistemin kalbini oluşturan ana Django uygulamasıdır (App).
+    * `models.py`: Veritabanı mimarisi (Filmler, Kullanıcılar, Yorumlar ve Ceza/Ban tabloları).
+    * `views.py`: Arka plan mantığı ve HTTP isteklerinin işlendiği kontrolcü (Controller) dosyası.
+    * `forms.py`: Kullanıcıdan alınan verilerin yapılandırıldığı ve doğrulandığı formlar.
+    * **`toxic_utils.py`**: **Projenin en kritik bileşenidir.** Eğitilmiş BERT yapay zeka modelinin web sitesine köprü kurduğu, anlık toksisite (siber zorbalık) analizi ve leetspeak manipülasyon filtrelemesinin yapıldığı NLP entegrasyon modülüdür.
+
+### 📊 Veri Bilimi ve Model Eğitimi
+* **`sentetikveri/`**: Yapay zeka modelinin beslendiği verilerin işlendiği dizindir. Veri setinin oluşturulması, temizlenmesi ve model eğitimine (Jupyter Notebooks üzerinden) hazır hale getirilmesi süreçlerini kapsar.
+* **`1_milyon_toksik_veri_zenginlestirilmis.csv`**: BERT modelinin ince ayarı (fine-tuning) için kullanılan, zenginleştirilmiş ve etiketlenmiş geniş çaplı veri setidir.
+
+### 🎨 Arayüz ve Statik Dosyalar (Frontend)
+* **`templates/`**: Kullanıcıya sunulan HTML dosyalarının bulunduğu dizindir (MVC mimarisindeki View katmanı).
+* **`static/`**: Sitenin görsel ve dinamik istemci tarafı dosyalarını barındırır (CSS stilleri, JS scriptleri).
+* **`media/`**: Kullanıcılar tarafından sisteme dinamik olarak yüklenen dosyaların (örn. profil fotoğrafları - `profile_pics/`) saklandığı dizindir.
+
+### 🛠️ Geliştirme Ortamı
+* **`.venv/`**: Projenin izole bir şekilde çalışmasını sağlayan Python sanal ortamıdır (Virtual Environment).
+* **`.github/`**: (Varsa) GitHub Actions gibi sürekli entegrasyon (CI/CD) süreçlerinin yapılandırma dosyalarını tutar.
+
+
 ---
 
 
