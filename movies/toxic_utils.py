@@ -57,19 +57,22 @@ def load_model_and_threshold(device):
     Önceden eğitilmiş PyTorch modelini (.pt) belleğe yükler.
     Modelin durum sözlüğünü (state_dict) eşleştirir ve karar verme eşiğini ayarlar.
     """
-    checkpoint_path = find_checkpoint_path()
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    threshold = 0.5
+    try:
+        checkpoint_path = find_checkpoint_path()
+        checkpoint = torch.load(checkpoint_path, map_location=device)
 
-    model = ToxicModel().to(device)
-    if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
-        model.load_state_dict(checkpoint["model_state_dict"])
-        threshold = float(checkpoint.get("threshold", 0.5))
-    else:
-        model.load_state_dict(checkpoint)
-        threshold = 0.5
-
-    # 0.46 değeri model eğitimi sırasında hesaplanan en optimum (F1-score) eşik değeridir.
-    return model, 0.46
+        model = ToxicModel().to(device)
+        if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+            model.load_state_dict(checkpoint["model_state_dict"])
+            threshold = float(checkpoint.get("threshold", 0.5))
+        else:
+            model.load_state_dict(checkpoint)
+            threshold = 0.5
+        return model, threshold
+    except Exception as e:
+        print(f"UYARI: Model yuklenemedi, varsayilan model kullaniliyor. Hata: {e}")
+        return ToxicModel().to(device), threshold
 
 # 4 -> A
 # 0 -> O
